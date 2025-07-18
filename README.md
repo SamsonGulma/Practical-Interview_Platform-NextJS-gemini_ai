@@ -3,7 +3,7 @@ Practical is Real-Time AI Voice-Agent Interview platform using NextJS gemini_ai 
 
 
 # PRACTICAL
-```
+```python
 npx create-next-app@latest ./
 ```
 Or use this command
