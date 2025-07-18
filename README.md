@@ -10,6 +10,11 @@ Or use this command
 ```
 npx create-next-app@latest practical
 ```
+I am using UI components - Shadcn ui
+explore their site for more...
+```
+https://ui.shadcn.com/
+```
 
 create account on vapi
 ```
