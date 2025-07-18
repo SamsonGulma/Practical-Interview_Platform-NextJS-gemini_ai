@@ -10,7 +10,7 @@ Or use this command
 ```
 npx create-next-app@latest practical
 ```
-I am using UI components - Shadcn ui
+I am using UI component - Shadcn ui
 explore their site for more...
 ```
 https://ui.shadcn.com/
