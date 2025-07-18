@@ -4,6 +4,8 @@ Practical is Real-Time AI Voice-Agent Interview platform using NextJS gemini_ai 
 
 # PRACTICAL
 ```python
+def kal():
+  print"this for a test"
 npx create-next-app@latest ./
 ```
 Or use this command
