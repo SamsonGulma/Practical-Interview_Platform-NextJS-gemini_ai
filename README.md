@@ -3,7 +3,7 @@ Practical is Real-Time AI Voice-Agent Interview platform using NextJS gemini_ai 
 
 
 # PRACTICAL
-```python
+```cpp
 def kal():
   print"this for a test"
 npx create-next-app@latest ./
