@@ -14,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
 import Image from "next/image"
 
 const formSchema = z.object({
@@ -24,7 +23,6 @@ const formSchema = z.object({
 
 
 const AuthForm = ({type}:{type: FormType}) => {
-     // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,10 +30,7 @@ const AuthForm = ({type}:{type: FormType}) => {
     },
   })
  
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values)
   }
     
@@ -44,16 +39,17 @@ const AuthForm = ({type}:{type: FormType}) => {
       <div className="card-border lg:min-w-[566px]">
           <div className="flex flex-col gap-6 card py-14 px-10">
               <div className="flex flex-row gap-2 justify-center ">
-                  <Image src="/logo.svg" alt="logo" height={32} width={38} />
-                  <h2 className="text-primary-100">Practical</h2>
+                
+                  <Image src="/favicon.ico" alt="logo" height={32} width={38} />
+                  <h3 className="text-primary-100">Practical</h3>
               </div>
             
-              <h3>Your Best Place to practice your Job Interview.</h3>
+              <h4>Your Best Place to practice your Job Interview.</h4>
           
                 <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 mt-4 form">
                       {isSignIn && <p>Name</p>}
-                      
+
             <Button type="submit">Submit</Button>
         </form>
         </Form>
