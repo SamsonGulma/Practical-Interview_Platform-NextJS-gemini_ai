@@ -11,13 +11,9 @@ import {
 import Image from "next/image"
 import Link from "next/link"
  
-import { toast, Toaster } from 'sonner'
+import { toast } from "sonner"
 import FormField from "./FormField"
 import { useRouter } from "next/navigation"
-
-const formSchema = z.object({
-  username: z.string().min(2).max(50),
-})
 
 
 const authFormSchema = (type: FormType) => {
@@ -48,6 +44,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
         toast.success("Account created successfully. Please Sign in.");
         router.push("/sign-in");
       } else {
+        console.log("Signing in with values:", values);
         toast.success("Signed in successfully!");
         router.push("/");
       }
