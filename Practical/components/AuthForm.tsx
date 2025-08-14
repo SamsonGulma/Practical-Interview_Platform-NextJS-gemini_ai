@@ -64,7 +64,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                   <h3 className="text-primary-100">Practical</h3>
               </div>
             
-              <h4>Your Best Place to practice your Job Interview.</h4>
+              <h4 className="text-center ">Your Best Place to practice your Job Interview.</h4>
           
                 <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 mt-4 form">
