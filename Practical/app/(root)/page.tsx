@@ -1,4 +1,6 @@
+import InterviewCard from '@/components/InterviewCard'
 import { Button } from '@/components/ui/button'
+import { dummyInterviews } from '@/constants'
 import { Link } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
@@ -21,7 +23,10 @@ const page = () => {
       <section className='flex flex-col gap-6 mt-8 '>
         <h2>Your Interviews</h2>
         <div className='interviews-sections'>
-          <p>You haven`&apos;t taken any Interviews.</p>
+          {dummyInterviews.map((interview) => (
+            <InterviewCard key={interview.id} {...interview} />
+          ))}
+          
         </div>
       </section>
       <section className='flex flex-col gap-6 mt-8 '>
