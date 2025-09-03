@@ -8,6 +8,7 @@ export async function signUp(params: SignUpParams) {
     
     try {
         const userRecord = await db.collection('users').doc(uid).get();
+
         if (userRecord.exists) {
             return {
                 success: false,
@@ -19,8 +20,12 @@ export async function signUp(params: SignUpParams) {
             name, email
         })
 
-    } catch (e) {
-        console.log('Error creating a user', e);
+        return {
+            success: true,
+            message: 'User created successfully. Sign In.'
+        }
+    } catch (e:any) {
+        console.error('Error creating this user', e);
 
         if(e.code === 'auth/email-already-exists') {
             return {
@@ -47,58 +52,76 @@ export async function signIn(params: SignInParams) {
                 message: 'User not found.'
             };
         }
-        await setSessionCookie(idToken);
+        const cookieResult = await setSessionCookie(idToken);
+
+        if (!cookieResult.success) {
+            return {
+                success: false,
+                message: cookieResult.message || 'Failed to set session cookie.'
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Signed in successfully.'
+        }
         
     } catch (e) {
         console.log('Error signing in user', e);
         return {
             success: false,
-            message: 'Failed to log.'
+            message: 'Failed to log in.'
         }
     }
 }
 
 export async function setSessionCookie(idToken: string) {
-    const cookieStore = await cookies();
-    const sessionCookie = await auth.createSessionCookie(idToken, {
-        expiresIn: 60 * 60 * 24 * 5 * 1000
-    });
+    try {
+        const sessionCookie = await auth.createSessionCookie(idToken, {
+            expiresIn: 60 * 60 * 24 * 5 * 1000 // 5 days in ms
+        });
 
-    cookieStore.set("session", sessionCookie, {
-        maxAge: 60 * 60 * 24 * 5,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        path: '/',
-        sameSite: 'lax'
-    });
+        cookies().set({
+            name: "session",
+            value: sessionCookie,
+            maxAge: 60 * 60 * 24 * 5,
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+            sameSite: 'strict'
+        });
+
+        return { success: true };
+    } catch (e) {
+        console.error('Error setting session cookie', e);
+        return { success: false, message: 'Error setting session cookie.' };
+    }
 }
 
-// export async function getCurrentUser(): Promise<User | null> {
-//     const cookieStore = await cookies();
+export async function getCurrentUser(): Promise<User | null> {
+    const cookieStore = cookies();
 
-//     const sessionCookie = await cookieStore.get('session')?.value;
+    const sessionCookie = cookieStore.get('session')?.value;
 
-//     if (!sessionCookie) return null;
-//     try {
-//         const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+    if (!sessionCookie) return null;
+    try {
+        const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
 
-//         const userRecord = await db.collection('users').doc(decodedClaims.uid).get();
+        const userRecord = await db.collection('users').doc(decodedClaims.uid).get();
 
-//         if (!userRecord.exists) return null;
+        if (!userRecord.exists) return null;
         
-//         return {
-//             ...userRecord.data(),
-//             id: userRecord.id,
-//         } as User;
-//     } catch (e) {
-//         console.log(e);
-        
-//         return null;
-//     }
-// }
+        return {
+            ...userRecord.data(),
+            id: userRecord.id,
+        } as User;
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+}
 
 
-// export async function isAuthenticated() {
-//     const user = await getCurrentUser();
-//     return !!user;
-// }
+export async function isAuthenticated() {
+    const user = await getCurrentUser();
+    return !!user;
+}

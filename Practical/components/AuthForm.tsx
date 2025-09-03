@@ -50,33 +50,37 @@ const AuthForm = ({ type }: { type: FormType }) => {
           name: name!,
           email: email,
           password: password,
-        })
+        });
+
+        console.log('this are the values', values);
 
         if (!result?.success) {
-          toast.error(result?.message);
+          console.log('this is the error in bool',!result?.success);
+          toast.error(`signup error: ${result?.message}`);
+          console.error('this is the error',result?.message);
           return;
-        } else {
-          const { email, password } = values;
-          
-          const userCredentials = await signInWithEmailAndPassword(auth, email, password);
-
-          const idToken = await userCredentials.user.getIdToken();
-          if (!idToken) {
-            toast.error("Sign in Failed");
-            return;
-          }
-
-          await signIn({
-            email,
-            idToken,
-          })
-
         }
-
+        
         console.log("Creating account with values:", values);
         toast.success("Account created successfully. Please Sign in.");
-        router.push("/sign-in");
-      } else {
+        router.push("/");
+      }
+        
+      else {
+        const { email, password } = values;
+        const userCredentials = await signInWithEmailAndPassword(auth, email, password)
+        const idToken = await userCredentials.user.getIdToken();
+
+        if(!idToken) {
+          toast.error("Sign in Failed");
+          return;
+        }
+
+        await signIn({
+          email,
+          idToken,
+        })
+
         console.log("Signing in with values:", values);
         toast.success("Signed in successfully!");
         router.push("/");
