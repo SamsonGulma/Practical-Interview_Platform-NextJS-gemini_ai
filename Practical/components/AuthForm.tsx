@@ -55,12 +55,12 @@ const AuthForm = ({ type }: { type: FormType }) => {
         console.log('this are the values', values);
 
         if (!result?.success) {
-          console.log('this is the error in bool',!result?.success);
+          console.log('this is the error in',!result?.success);
           toast.error(`signup error: ${result?.message}`);
           console.error('this is the error',result?.message);
           return;
+
         }
-        
         console.log("Creating account with values:", values);
         toast.success("Account created successfully. Please Sign in.");
         router.push("/");
