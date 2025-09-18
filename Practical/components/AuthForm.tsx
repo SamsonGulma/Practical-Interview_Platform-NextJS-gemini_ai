@@ -3,14 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
 } from "@/components/ui/form"
 import Image from "next/image"
 import Link from "next/link"
- 
 import { toast } from "sonner"
 import FormField from "./FormField"
 import { useRouter } from "next/navigation"
@@ -38,7 +36,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       email: "",
       password: "",
     },
-  })
+  }) 
  
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
@@ -48,22 +46,21 @@ const AuthForm = ({ type }: { type: FormType }) => {
         const result = await signUp({
           uid: userCredentials.user.uid,
           name: name!,
-          email: email,
-          password: password,
+          email,
+          password,
         });
 
-        console.log('this are the values', values);
+        console.log('Message 01: this are the values', values, 'result', `${ result?.success } `);
+        // if (!result?.success) {
+        //   console.log('Error 08: this is the error in boolean',!result?.success);
+        //   toast.error(`Error 08: signup error: ${result?.message}`);
+        //   console.error('Error 08: this is the error',result?.message);
+        //   return;
 
-        if (!result?.success) {
-          console.log('this is the error in',!result?.success);
-          toast.error(`signup error: ${result?.message}`);
-          console.error('this is the error',result?.message);
-          return;
-
-        }
+        // }
         console.log("Creating account with values:", values);
         toast.success("Account created successfully. Please Sign in.");
-        router.push("/");
+        router.push("/sign-in");
       }
         
       else {
@@ -72,7 +69,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
         const idToken = await userCredentials.user.getIdToken();
 
         if(!idToken) {
-          toast.error("Sign in Failed");
+          toast.error("Error09: Sign in Failed");
           return;
         }
 
@@ -81,13 +78,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
           idToken,
         })
 
-        console.log("Signing in with values:", values);
+        console.log("Error 10: Signing in with values:", values);
         toast.success("Signed in successfully!");
         router.push("/");
       }
     } catch(error) {
       console.error(error);
-      toast.error("An error occurred while processing your request. Please try again later.");
+      toast.error(" error11: An error occurred while processing your request. Please try again later.");
     }
   }
     

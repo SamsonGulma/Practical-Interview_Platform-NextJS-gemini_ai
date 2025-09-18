@@ -1,6 +1,6 @@
 'use server';
 
-import { db, auth } from "@/firebase/admin";
+import { auth, db } from "@/firebase/admin";
 import { cookies } from "next/headers";
 
 export async function signUp(params: SignUpParams) {
@@ -12,7 +12,7 @@ export async function signUp(params: SignUpParams) {
         if (userRecord.exists) {
             return {
                 success: false,
-                message: 'User already exists. Please sign in.'
+                message: 'Err 01: User already exists.'
             }
         }
 
@@ -24,22 +24,49 @@ export async function signUp(params: SignUpParams) {
             success: true,
             message: 'User created successfully. Sign In.'
         }
+
+
     } catch (e:any) {
-        console.error('Error creating this user', e);
+        console.error('Err 02: This email is already in use', e);
 
         if(e.code === 'auth/email-already-exists') {
             return {
                 success: false,
-                message: 'This email is already in use.'
+                message: 'Err 02: This email is already in use.'
             }
         }
         return {
             success: false,
-            message: 'Error creating user.'
+            message: 'Err 03: Error creating user.'
         }
     }
 
 }
+
+export async function setSessionCookie(idToken: string) {
+
+    const cookieStore = await cookies();
+
+        const sessionCookie = await auth.createSessionCookie(idToken, {
+            expiresIn: 60 * 60 * 24 * 5 * 1000 // 5 days in ms
+        });
+
+        cookieStore.set('session', sessionCookie, {
+            value: sessionCookie,
+            maxAge: 60 * 60 * 24 * 5,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+            sameSite: 'lax'
+        });
+
+        // console.error('Err 07: Error setting session cookie', e);
+        // return { success: false, message: 'Err 07: Error setting session cookie.' };
+    
+        // return { success: true };
+     
+}
+
 
 export async function signIn(params: SignInParams) {
     const { email, idToken } = params;
@@ -49,56 +76,34 @@ export async function signIn(params: SignInParams) {
         if (!userRecord) {
             return {
                 success: false,
-                message: 'User not found.'
+                message: 'Err 04: User not found.'
             };
         }
-        const cookieResult = await setSessionCookie(idToken);
+        await setSessionCookie(idToken);
 
-        if (!cookieResult.success) {
-            return {
-                success: false,
-                message: cookieResult.message || 'Failed to set session cookie.'
-            }
-        }
+        // if (!cookieResult.success) {
+        //     return {
+        //         success: false,
+        //         message: cookieResult.message || 'Err 05: Failed to set session cookie.'
+        //     }
+        // }
 
-        return {
-            success: true,
-            message: 'Signed in successfully.'
-        }
+        // return {
+        //     success: true,
+        //     message: 'Signed in successfully.'
+        // }
         
     } catch (e) {
-        console.log('Error signing in user', e);
+        console.log('Err 06: Error signing in user', e);
         return {
             success: false,
-            message: 'Failed to log in.'
+            message: 'Err 06: Failed to log in.'
         }
-    }
-}
-
-export async function setSessionCookie(idToken: string) {
-    try {
-        const sessionCookie = await auth.createSessionCookie(idToken, {
-            expiresIn: 60 * 60 * 24 * 5 * 1000 // 5 days in ms
-        });
-
-        cookies().set({
-            name: "session",
-            value: sessionCookie,
-            maxAge: 60 * 60 * 24 * 5,
-            secure: process.env.NODE_ENV === 'production',
-            path: '/',
-            sameSite: 'strict'
-        });
-
-        return { success: true };
-    } catch (e) {
-        console.error('Error setting session cookie', e);
-        return { success: false, message: 'Error setting session cookie.' };
     }
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
     const sessionCookie = cookieStore.get('session')?.value;
 
@@ -108,7 +113,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
         const userRecord = await db.collection('users').doc(decodedClaims.uid).get();
 
-        if (!userRecord.exists) return null;
+        if (!userRecord.exists) return null;    
         
         return {
             ...userRecord.data(),
