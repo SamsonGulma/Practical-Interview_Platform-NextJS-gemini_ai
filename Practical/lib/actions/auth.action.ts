@@ -26,7 +26,7 @@ export async function signUp(params: SignUpParams) {
         }
 
 
-    } catch (e:any) {
+    } catch (e: any) {
         console.error('Err 02: This email is already in use', e);
 
         if(e.code === 'auth/email-already-exists') {
